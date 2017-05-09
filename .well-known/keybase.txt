@@ -1,0 +1,54 @@
+==================================================================
+https://keybase.io/ahecht
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://anthonyhecht.com
+  * I am ahecht (https://keybase.io/ahecht) on keybase.
+  * I have a public key ASCwEfIDOc_WY1Qf0d-oQLMeAcPLHVxdJ2GlLqc3BpYRZAo
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "0120b011f20339cfd663541fd1dfa840b31e01c3cb1d5c5d2761a52ea737069611640a",
+            "host": "keybase.io",
+            "kid": "0120b011f20339cfd663541fd1dfa840b31e01c3cb1d5c5d2761a52ea737069611640a",
+            "uid": "227b1e84af87893753ffc69a86bd5b19",
+            "username": "ahecht"
+        },
+        "service": {
+            "hostname": "anthonyhecht.com",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "client": {
+        "name": "keybase.io go client",
+        "version": "1.0.22"
+    },
+    "ctime": 1494357318,
+    "expire_in": 504576000,
+    "merkle_root": {
+        "ctime": 1494357274,
+        "hash": "6fa4b96cc28bf948ef5320186356a88ea8b1166c3f817a5b7f5c01d546a13137159a7e0070c2eb7e65847cdf67f3308f91e4ae29e89e1a7059ab1bbcbc998f1a",
+        "seqno": 1060623
+    },
+    "prev": "ab1641d60ac01bc5d58abb239b9f8457ef1223ffe366ecceaf7bd3096948014e",
+    "seqno": 24,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgsBHyAznP1mNUH9HfqECzHgHDyx1cXSdhpS6nNwaWEWQKp3BheWxvYWTFAvd7ImJvZHkiOnsia2V5Ijp7ImVsZGVzdF9raWQiOiIwMTIwYjAxMWYyMDMzOWNmZDY2MzU0MWZkMWRmYTg0MGIzMWUwMWMzY2IxZDVjNWQyNzYxYTUyZWE3MzcwNjk2MTE2NDBhIiwiaG9zdCI6ImtleWJhc2UuaW8iLCJraWQiOiIwMTIwYjAxMWYyMDMzOWNmZDY2MzU0MWZkMWRmYTg0MGIzMWUwMWMzY2IxZDVjNWQyNzYxYTUyZWE3MzcwNjk2MTE2NDBhIiwidWlkIjoiMjI3YjFlODRhZjg3ODkzNzUzZmZjNjlhODZiZDViMTkiLCJ1c2VybmFtZSI6ImFoZWNodCJ9LCJzZXJ2aWNlIjp7Imhvc3RuYW1lIjoiYW50aG9ueWhlY2h0LmNvbSIsInByb3RvY29sIjoiaHR0cDoifSwidHlwZSI6IndlYl9zZXJ2aWNlX2JpbmRpbmciLCJ2ZXJzaW9uIjoxfSwiY2xpZW50Ijp7Im5hbWUiOiJrZXliYXNlLmlvIGdvIGNsaWVudCIsInZlcnNpb24iOiIxLjAuMjIifSwiY3RpbWUiOjE0OTQzNTczMTgsImV4cGlyZV9pbiI6NTA0NTc2MDAwLCJtZXJrbGVfcm9vdCI6eyJjdGltZSI6MTQ5NDM1NzI3NCwiaGFzaCI6IjZmYTRiOTZjYzI4YmY5NDhlZjUzMjAxODYzNTZhODhlYThiMTE2NmMzZjgxN2E1YjdmNWMwMWQ1NDZhMTMxMzcxNTlhN2UwMDcwYzJlYjdlNjU4NDdjZGY2N2YzMzA4ZjkxZTRhZTI5ZTg5ZTFhNzA1OWFiMWJiY2JjOTk4ZjFhIiwic2Vxbm8iOjEwNjA2MjN9LCJwcmV2IjoiYWIxNjQxZDYwYWMwMWJjNWQ1OGFiYjIzOWI5Zjg0NTdlZjEyMjNmZmUzNjZlY2NlYWY3YmQzMDk2OTQ4MDE0ZSIsInNlcW5vIjoyNCwidGFnIjoic2lnbmF0dXJlIn2jc2lnxEBHiE0zd/os1cz4nBpvPqntfUIbI8TzRiVhrvevGu55AkiND1oTP/7h+1M60lPw/D/C9F18bMn23ttaOnqI8dwPqHNpZ190eXBlIKRoYXNogqR0eXBlCKV2YWx1ZcQg2iIPWw55t4vXo6l2wmX9VCWdsX2XfJEWXSFqX1EsQ02jdGFnzQICp3ZlcnNpb24B
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/ahecht
+
+==================================================================
