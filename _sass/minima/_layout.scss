@@ -6,16 +6,9 @@
 
 .site-content {
   flex: 1;
-}
-
-.aligner {
-  display: flex;
   align-items: center;
+  display: flex;
   justify-content: center;
-}
-
-.aligner-item {
-  max-width: 50%;
 }
 
 /**
