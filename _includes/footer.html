@@ -6,12 +6,16 @@
 
       <div style="text-align:center;margin:0 auto;">
         <h3 style="font-family: 'Raleway', sans-serif;">Anthony Hecht</h3>
+        {% if site.twitter_username %}
+          {% include icon-twitter.html username=site.twitter_username %}
+        {% endif %}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         {% if site.github_username %}
           {% include icon-github.html username=site.github_username %}
         {% endif %}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        {% if site.twitter_username %}
-          {% include icon-twitter.html username=site.twitter_username %}
+        {% if site.keybase_username %}
+          {% include icon-keybase.html username=site.keybase_username %}
         {% endif %}
       </div>
 
