@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ page.lang | default: site.lang | default: "en" }}">
 
-  <body class="site">
+  {% include head.html %}
 
-    {% include header.html %}
+  <body class="site">
 
     <main class="site-content" aria-label="Content">
       {{ content }}
