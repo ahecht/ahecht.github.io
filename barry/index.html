@@ -364,7 +364,9 @@ function sci(d){
   if(d===0) return '1.000';
   return m.toFixed(3)+' \u00d7 10<sup>'+e+'</sup>';
 }
-function grouped(str){ return str.replace(/\B(?=(\d{3})+(?!\d))/g,'\u2009'); }
+/* comma, not a thin space: the display font is monospace, so any whitespace
+   separator takes a full character cell and gapes at the big display's size */
+function grouped(str){ return str.replace(/\B(?=(\d{3})+(?!\d))/g,','); }
 
 var ANCHORS=[
   {l:3.56,t:'seconds in an hour'},
