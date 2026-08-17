@@ -215,6 +215,20 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) sa
   padding:16px 16px 14px;
   box-shadow:inset 0 5px 18px rgba(0,0,0,.78),0 1px 0 rgba(255,255,255,.22);
 }
+/* the main result gets a screen of its own, same glass as the value windows but
+   scaled up; the caption stays outside it as a legend on the panel */
+.screen{
+  position:relative;padding:15px 14px 13px;border-radius:3px;
+  background:
+    radial-gradient(130% 150% at 50% 130%, rgba(127,166,80,.13), transparent 68%),
+    linear-gradient(180deg,#090805,#13110c);
+  border:1px solid #3a2d08;
+  box-shadow:inset 0 3px 10px rgba(0,0,0,.92),0 1px 0 rgba(255,255,255,.06);
+}
+.screen::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:repeating-linear-gradient(180deg, rgba(0,0,0,.24) 0 1px, transparent 1px 3px);
+}
 .big{
   font-family:'Share Tech Mono',monospace;
   font-size:clamp(38px,11vw,68px);line-height:1;
@@ -224,8 +238,11 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) sa
 }
 .big sup{font-size:.52em;top:-.55em;position:relative}
 .bigcap{
-  text-align:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--steel);margin-bottom:9px;
+  text-align:center;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  font-weight:600;
+  color:rgba(214,203,175,.58);
+  text-shadow:0 -1px 0 rgba(0,0,0,.65);
+  margin:0 0 8px;
 }
 /* a bank of lit windows rather than a list: stamped legend on the left,
    the value behind its own pane of dirty glass on the right */
@@ -295,10 +312,13 @@ dl{margin:0}
 .verdict.crit .tag{color:#ff7454;text-shadow:0 0 12px rgba(200,60,35,.6)}
 .verdict.crit .tag::before{background:#ff7454;box-shadow:0 0 9px rgba(255,90,52,.95),inset 0 -1px 1px rgba(0,0,0,.45)}
 .verdict.crit p{color:rgba(255,158,130,.72);text-shadow:0 0 7px rgba(200,60,35,.3)}
+/* second line on the same screen, not a box of its own */
 .full{
-  margin-top:10px;font-family:'Share Tech Mono',monospace;font-size:11px;
+  margin-top:12px;padding-top:10px;
+  border-top:1px solid rgba(127,166,80,.15);
+  font-family:'Share Tech Mono',monospace;font-size:11px;
   color:var(--radium);word-break:break-all;line-height:1.5;text-align:center;
-  background:#0d0b08;padding:9px;border-radius:3px;
+  text-shadow:0 0 6px rgba(127,166,80,.3);
 }
 
 /* sprayed on later through a stencil: thin worn paint with a little overspray,
@@ -419,8 +439,10 @@ dl{margin:0}
     </div>
 
     <p class="bigcap" id="cap">Awaiting subject</p>
-    <div class="big" id="big">&mdash;</div>
-    <div class="full" id="full" hidden></div>
+    <div class="screen">
+      <div class="big" id="big">&mdash;</div>
+      <div class="full" id="full" hidden></div>
+    </div>
 
     <dl class="rows">
       <div class="row"><dt>Next birthday</dt><dd id="r-date">&mdash;</dd></div>
