@@ -237,7 +237,7 @@ footer{
 
   <header class="plate">
     <h1>Birthday Detector</h1>
-    <p class="sub">Model BW&#8209;1 &middot; Survey Meter &middot; <b>Range: 1 &rarr; 2<sup>&minus;365</sup></b></p>
+    <p class="sub">Model BW&#8209;1 &middot; <b>Range: 1 &rarr; 2<sup>&minus;365</sup></b></p>
   </header>
 
   <div class="glass">
@@ -255,7 +255,7 @@ footer{
       <g id="labels"></g>
 
       <text x="200" y="118" text-anchor="middle" font-family="'Big Shoulders Display',sans-serif" font-weight="700" font-size="15" letter-spacing="3.5" fill="#17140e" opacity=".62">DAYS TO BIRTHDAY</text>
-      <text x="200" y="136" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="12" letter-spacing="1.6" fill="#17140e" opacity=".45">LOGARITHMIC &middot; PER BARRY'S METHOD</text>
+      <text x="200" y="136" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="12" letter-spacing="1.6" fill="#17140e" opacity=".45">LOGARITHMIC &middot; PER BARRY MATH</text>
 
       <g id="needle">
         <polygon points="200,64 196.2,196 203.8,196" fill="url(#ndl)"/>
@@ -288,7 +288,7 @@ footer{
   <section class="readout">
     <div class="verdict" id="verdict">
       <div class="tag" id="v-tag">Standby</div>
-      <p id="v-body">Enter a date of birth. The meter reads Barry's system, not reality.</p>
+      <p id="v-body">Enter a date of birth.</p>
     </div>
 
     <p class="bigcap" id="cap">Awaiting subject</p>
@@ -305,10 +305,6 @@ footer{
 
   </section>
 </main>
-
-<div class="brass">
-  <span class="eq">f = 2<sup>&minus;d</sup></span>
-</div>
 
 <footer>Bureau of Gift Inflation &middot; Calibrated against Nothing &middot; Barry declined to participate</footer>
 
@@ -398,12 +394,12 @@ var $=function(id){return document.getElementById(id);};
 
 function verdict(d){
   if(d===0) return ['crit','Critical','Actual birthday detected. Full celebratory yield.'];
-  if(d===1) return ['crit','"Half" birthday detected','Claim under review.'];
-  if(d===2) return ['','"Quarter" birthday detected','Gifts should be reduced proportionally.'];
-  if(d<=6)  return ['','Elevated chance of birthday','Detectable by instruments only, no cake.'];
-  if(d<=13) return ['','Trace','A birthday in the same sense that a radio station you can\'t actually hear is music.'];
-  if(d<=59) return ['','Schrodinger\'s birthday','The needle is in the box, but you don\'t know which side it\'s on.'];
-  return ['','Background','Indistinguishable from any other day of the year.'];
+  if(d===1) return ['crit','"Half Birthday" detected','Claim under review.'];
+  if(d===2) return ['','"Quarter Birthday" detected','Gifts should be reduced logarithmically.'];
+  if(d<=6)  return ['','Elevated chance of Birthday','Detectable by instruments only, no cake.'];
+  if(d<=13) return ['','Trace Birthday','It\'s your birthday in the same sense that it\'s the Italian Renaissance.'];
+  if(d<=59) return ['','Schrodinger\'s Birthday','The needle is in the box, but you don\'t know which side it\'s on.'];
+  return ['','Background Birthday','Indistinguishable from any other day of the year.'];
 }
 
 function update(){
