@@ -247,17 +247,45 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) sa
   background:repeating-linear-gradient(180deg, rgba(0,0,0,.24) 0 1px, transparent 1px 3px);
 }
 dl{margin:0}
+/* annunciator panel: the same glass as the value windows, with a lamp that lights
+   the legend. Hidden until there is a reading, so there is no standby state. */
 .verdict{
-  margin-top:14px;padding:12px 14px;border-radius:4px;
-  background:rgba(127,166,80,.1);border-left:4px solid var(--radium);
+  position:relative;margin:0 0 16px;padding:11px 13px 10px;border-radius:3px;
+  background:
+    radial-gradient(120% 165% at 50% 132%, rgba(127,166,80,.15), transparent 70%),
+    linear-gradient(180deg,#090805,#13110c);
+  border:1px solid #3a2d08;
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.06);
 }
-.verdict.crit{background:rgba(168,41,27,.16);border-left-color:var(--danger)}
+.verdict::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:repeating-linear-gradient(180deg, rgba(0,0,0,.24) 0 1px, transparent 1px 3px);
+}
 .verdict .tag{
+  display:flex;align-items:center;gap:9px;
   font-family:'Big Shoulders Display',sans-serif;font-weight:700;
-  font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:var(--radium-hot);
+  font-size:19px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--radium-hot);text-shadow:0 0 12px rgba(127,166,80,.6);
 }
-.verdict.crit .tag{color:#ff7454}
-.verdict p{margin:3px 0 0;font-size:16px;color:rgba(239,231,210,.86)}
+.verdict .tag::before{
+  content:'';width:9px;height:9px;border-radius:50%;flex:none;
+  background:var(--radium-hot);
+  box-shadow:0 0 9px rgba(127,166,80,.95),inset 0 -1px 1px rgba(0,0,0,.45);
+}
+.verdict p{
+  margin:6px 0 0;font-family:'Share Tech Mono',monospace;
+  font-size:13px;line-height:1.5;
+  color:rgba(168,209,106,.72);text-shadow:0 0 7px rgba(127,166,80,.3);
+}
+.verdict.crit{
+  background:
+    radial-gradient(120% 165% at 50% 132%, rgba(168,41,27,.2), transparent 70%),
+    linear-gradient(180deg,#0b0705,#150d0a);
+  border-color:#4a1c10;
+}
+.verdict.crit .tag{color:#ff7454;text-shadow:0 0 12px rgba(200,60,35,.6)}
+.verdict.crit .tag::before{background:#ff7454;box-shadow:0 0 9px rgba(255,90,52,.95),inset 0 -1px 1px rgba(0,0,0,.45)}
+.verdict.crit p{color:rgba(255,158,130,.72);text-shadow:0 0 7px rgba(200,60,35,.3)}
 .full{
   margin-top:10px;font-family:'Share Tech Mono',monospace;font-size:11px;
   color:var(--radium);word-break:break-all;line-height:1.5;text-align:center;
@@ -268,12 +296,13 @@ dl{margin:0}
    and never quite squared up to the case. Barlow Condensed carries Cyrillic, so
    Google serves that subset for these glyphs. */
 .stencil{
-  margin:16px 34px 0;text-align:right;
+  margin:16px 34px 0;text-align:center;
   font-family:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
-  font-weight:600;font-size:13px;letter-spacing:.26em;
+  font-weight:600;font-size:15px;letter-spacing:.28em;
+  text-indent:.28em;   /* letter-spacing trails the last glyph; nudge back to true centre */
   color:rgba(26,19,6,.46);
   text-shadow:0 0 2px rgba(26,19,6,.3);
-  transform:rotate(-.7deg);transform-origin:100% 50%;
+  transform:rotate(-.7deg);transform-origin:50% 50%;
 }
 
 /* stamped into the case and paint-filled: black enamel in the groove, a shadowed
@@ -287,6 +316,7 @@ dl{margin:0}
     0 -1px 0 rgba(0,0,0,.34),
     0 1px 0 rgba(255,255,255,.38);
 }
+.engraved i{font-style:normal;margin:0 .55em}
 
 @media (max-width:520px){
   .plate{padding:4px 6px 12px}
@@ -294,6 +324,10 @@ dl{margin:0}
   .controls{grid-template-columns:1fr;justify-items:start;gap:10px}
   .datewrap{width:max-content}
   input[type=date]{width:auto;min-width:12.5em}
+  /* one line per clause instead of an arbitrary wrap mid-phrase */
+  .engraved{line-height:2}
+  .engraved span{display:block}
+  .engraved i{display:none}
   .row{grid-template-columns:1fr;gap:5px}
   .row dd{text-align:left}
 }
@@ -369,9 +403,9 @@ dl{margin:0}
   </div>
 
   <section class="readout">
-    <div class="verdict" id="verdict">
-      <div class="tag" id="v-tag">Standby</div>
-      <p id="v-body">Enter a date of birth.</p>
+    <div class="verdict" id="verdict" hidden>
+      <div class="tag" id="v-tag"></div>
+      <p id="v-body"></p>
     </div>
 
     <p class="bigcap" id="cap">Awaiting subject</p>
@@ -389,7 +423,7 @@ dl{margin:0}
   </section>
 
   <p class="stencil">&#1048;&#1053;&#1042;. &#8470; 04&#8209;1986</p>
-  <p class="engraved">Bureau of Gift Inflation &middot; Calibrated against Nothing &middot; Barry declined to participate</p>
+  <p class="engraved"><span>Bureau of Gift Inflation</span><i>&middot;</i><span>Calibrated against Nothing</span><i>&middot;</i><span>Barry declined to participate</span></p>
 </main>
 
 <script>
@@ -500,7 +534,7 @@ function syncDateField(){
 function update(){
   syncDateField();
   var v=parseISO($('dob').value);
-  if(!v){ return; }
+  if(!v){ $('verdict').hidden=true; return; }   /* no reading, so no lit annunciator */
   var today=midnight(new Date());
   var nxt=occurrence(today.getFullYear(),v.m,v.d);
   if(nxt<today) nxt=occurrence(today.getFullYear()+1,v.m,v.d);
@@ -526,6 +560,7 @@ function update(){
 
   var vd=verdict(d);
   $('verdict').className='verdict'+(vd[0]?' '+vd[0]:'');
+  $('verdict').hidden=false;
   $('v-tag').textContent=vd[1];
   var an=analogy(d);
   $('v-body').innerHTML=vd[2]+(an?'<br>'+an:'');
