@@ -200,13 +200,34 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) sa
   text-align:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;
   color:var(--steel);margin-bottom:9px;
 }
-.rows{margin-top:16px;border-top:1px solid rgba(239,231,210,.14)}
-.row{
-  display:flex;justify-content:space-between;gap:14px;align-items:baseline;
-  padding:8px 0;border-bottom:1px solid rgba(239,231,210,.09);
+/* a bank of lit windows rather than a list: stamped legend on the left,
+   the value behind its own pane of dirty glass on the right */
+.rows{margin-top:18px;display:grid;gap:9px}
+.row{display:grid;grid-template-columns:minmax(92px,33%) 1fr;gap:11px;align-items:stretch}
+.row dt{
+  align-self:center;
+  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;
+  color:rgba(214,203,175,.58);
+  text-shadow:0 -1px 0 rgba(0,0,0,.65);   /* silkscreen sitting proud of the panel */
 }
-.row dt{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--steel)}
-.row dd{margin:0;font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--dial);text-align:right}
+.row dd{
+  margin:0;position:relative;
+  padding:6px 10px;border-radius:2px;
+  font-family:'Share Tech Mono',monospace;font-size:14px;line-height:1.35;
+  color:var(--radium-hot);text-align:right;
+  text-shadow:0 0 9px rgba(127,166,80,.55);
+  background:
+    radial-gradient(130% 150% at 50% 125%, rgba(127,166,80,.11), transparent 68%),
+    linear-gradient(180deg,#090805,#13110c);
+  border:1px solid #3a2d08;
+  box-shadow:
+    inset 0 2px 7px rgba(0,0,0,.9),
+    0 1px 0 rgba(255,255,255,.06);
+}
+.row dd::after{                            /* scan lines across the glass */
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:repeating-linear-gradient(180deg, rgba(0,0,0,.24) 0 1px, transparent 1px 3px);
+}
 dl{margin:0}
 .verdict{
   margin-top:14px;padding:12px 14px;border-radius:4px;
@@ -225,6 +246,18 @@ dl{margin:0}
   background:#0d0b08;padding:9px;border-radius:3px;
 }
 
+/* sprayed on later through a stencil: thin worn paint with a little overspray,
+   and never quite squared up to the case. Barlow Condensed carries Cyrillic, so
+   Google serves that subset for these glyphs. */
+.stencil{
+  margin:16px 34px 0;text-align:right;
+  font-family:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  font-weight:600;font-size:13px;letter-spacing:.26em;
+  color:rgba(26,19,6,.46);
+  text-shadow:0 0 2px rgba(26,19,6,.3);
+  transform:rotate(-.7deg);transform-origin:100% 50%;
+}
+
 /* stamped into the case and paint-filled: black enamel in the groove, a shadowed
    upper wall, and a lit lower lip where the tool broke the surface */
 .engraved{
@@ -240,7 +273,7 @@ dl{margin:0}
 @media (max-width:520px){
   .plate{padding:4px 6px 12px}
   .controls{grid-template-columns:1fr}
-  .row{flex-direction:column;gap:0}
+  .row{grid-template-columns:1fr;gap:5px}
   .row dd{text-align:left}
 }
 @media (prefers-reduced-motion:reduce){
@@ -334,6 +367,7 @@ dl{margin:0}
 
   </section>
 
+  <p class="stencil">&#1048;&#1053;&#1042;. &#8470; 04&#8209;1986</p>
   <p class="engraved">Bureau of Gift Inflation &middot; Calibrated against Nothing &middot; Barry declined to participate</p>
 </main>
 
