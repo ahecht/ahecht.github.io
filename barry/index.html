@@ -623,16 +623,31 @@ function ensureCtx(){
   if(ctx.state==='suspended') ctx.resume();
 }
 function noteGesture(){
-  if(gestured) return;
-  gestured=true;
   if(!on) return;
-  ensureCtx();
+  var first=!gestured;
+  gestured=true;
+  ensureCtx();   /* on later taps this is a cheap no-op, but it re-resumes a context
+                    iOS suspended on us, so a tap always recovers the audio */
+  if(!first) return;
   /* the pending click was drawn back when nothing could be heard, so waiting it
      out would leave the meter mute for up to 12s after the tap that unlocked it.
      Restart short: the instrument comes alive on contact, then resumes Poisson. */
   clearTimeout(timer);
   timer=setTimeout(function(){ if(on){ blip(); schedule(); } }, 140);
 }
+
+/* 'playback' is what lets the meter ignore the silent switch, but it also earns the
+   right to keep going once the page is backgrounded - so stop it by hand. */
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){
+    clearTimeout(timer);
+    if(ctx && ctx.state==='running') ctx.suspend();
+  }else if(on){
+    ensureCtx();
+    clearTimeout(timer);
+    schedule();
+  }
+});
 function setAudio(next){
   on=next;
   var el=$('audio');
