@@ -156,9 +156,27 @@ input[type=date]{
   background:linear-gradient(180deg,#100e0b,#221d17);
   border:2px solid #54400a;border-radius:5px;
   box-shadow:inset 0 3px 9px rgba(0,0,0,.8);
+  /* iOS sizes date inputs on its own metrics unless appearance is reset, which is
+     what stretched the field and pushed the value out of the visible box */
+  -webkit-appearance:none;appearance:none;
+  min-height:48px;
 }
+input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0;line-height:normal}
+input[type=date]::-webkit-datetime-edit{padding:0;line-height:normal}
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) saturate(4) hue-rotate(45deg);cursor:pointer}
 :focus-visible{outline:3px solid #17140e;outline-offset:2px}
+
+/* iOS shows nothing at all in an empty date field, so stand in for the missing
+   placeholder; .empty is toggled from the script */
+.datewrap{position:relative;display:block}
+.datewrap::after{
+  content:attr(data-ph);
+  position:absolute;left:14px;top:0;bottom:0;
+  display:none;align-items:center;pointer-events:none;
+  font-family:'Share Tech Mono',monospace;font-size:19px;
+  color:rgba(168,209,106,.3);
+}
+.datewrap.empty::after{display:flex}
 
 .switch{
   display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;
@@ -272,7 +290,10 @@ dl{margin:0}
 
 @media (max-width:520px){
   .plate{padding:4px 6px 12px}
-  .controls{grid-template-columns:1fr}
+  /* stacked, but sized to content so neither control reads as a full-width slab */
+  .controls{grid-template-columns:1fr;justify-items:start;gap:10px}
+  .datewrap{width:max-content}
+  input[type=date]{width:auto;min-width:12.5em}
   .row{grid-template-columns:1fr;gap:5px}
   .row dd{text-align:left}
 }
@@ -339,7 +360,7 @@ dl{margin:0}
   <div class="controls">
     <div>
       <label class="cap" for="dob">Subject date of birth</label>
-      <input type="date" id="dob">
+      <span class="datewrap" data-ph="-- / -- / ----"><input type="date" id="dob"></span>
     </div>
     <div class="switch on" id="audio" role="switch" aria-checked="true" tabindex="0">
       <div class="track"><div class="knob"></div></div>
@@ -468,7 +489,13 @@ function verdict(d){
   return ['','Background Birthday','Indistinguishable from any other day of the year.'];
 }
 
+/* stands in for the placeholder iOS refuses to draw on an empty date field */
+function syncDateField(){
+  document.querySelector('.datewrap').classList.toggle('empty', !$('dob').value);
+}
+
 function update(){
+  syncDateField();
   var v=parseISO($('dob').value);
   if(!v){ return; }
   var today=midnight(new Date());
@@ -574,6 +601,7 @@ $('audio').addEventListener('keydown',function(e){
 });
 $('needle').setAttribute('transform','rotate('+angOf(365).toFixed(2)+' '+CX+' '+CY+')');
 $('cpm').textContent=Math.round(rate()*60)+' CPM';
+syncDateField();
 setAudio(true);
 })();
 </script>
