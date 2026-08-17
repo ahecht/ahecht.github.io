@@ -578,9 +578,11 @@ function update(){
 }
 
 /* ---------- geiger circuit ---------- */
+/* 0.4/s is ~24 CPM, which is about what background actually reads; the old 0.12
+   floor was one click every eight seconds and made the idle meter seem dead */
 function rate(){
-  if(state.d===null) return 0.12;
-  return Math.max(0.12, 55*Math.pow(2,-state.d));
+  if(state.d===null) return 0.4;
+  return Math.max(0.4, 55*Math.pow(2,-state.d));
 }
 var ctx=null, on=false, timer=null, noise=null, gestured=false;
 function buildNoise(){
@@ -623,7 +625,13 @@ function ensureCtx(){
 function noteGesture(){
   if(gestured) return;
   gestured=true;
-  if(on) ensureCtx();
+  if(!on) return;
+  ensureCtx();
+  /* the pending click was drawn back when nothing could be heard, so waiting it
+     out would leave the meter mute for up to 12s after the tap that unlocked it.
+     Restart short: the instrument comes alive on contact, then resumes Poisson. */
+  clearTimeout(timer);
+  timer=setTimeout(function(){ if(on){ blip(); schedule(); } }, 140);
 }
 function setAudio(next){
   on=next;
