@@ -571,7 +571,15 @@ function schedule(){
    of the circuit runs either way. */
 function ensureCtx(){
   if(!gestured) return;
-  if(!ctx){ ctx=new (window.AudioContext||window.webkitAudioContext)(); buildNoise(); }
+  if(!ctx){
+    /* iOS puts Web Audio in the 'ambient' session, which the hardware silent switch
+       mutes outright - an <audio> element would ignore that switch, a bare context
+       does not. 'playback' opts out of the mute switch. Set before constructing the
+       context, since the session category is read at that point. */
+    try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    buildNoise();
+  }
   if(ctx.state==='suspended') ctx.resume();
 }
 function noteGesture(){
@@ -590,7 +598,7 @@ function setAudio(next){
 
 /* ---------- wiring ---------- */
 /* capture phase, so the gesture is banked before the switch's own handlers run */
-['pointerdown','touchstart','keydown'].forEach(function(ev){
+['pointerdown','touchstart','touchend','click','keydown'].forEach(function(ev){
   document.addEventListener(ev,noteGesture,true);
 });
 
