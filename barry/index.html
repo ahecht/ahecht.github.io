@@ -14,7 +14,6 @@
   --case-lo:#a97e11;
   --case-hi:#eec14f;
   --panel:#2b2620;
-  --panel-lo:#191510;
   --dial:#efe7d2;
   --dial-lo:#d6cbaf;
   --ink:#17140e;
@@ -22,7 +21,6 @@
   --radium-hot:#a8d16a;
   --danger:#a8291b;
   --steel:#8a8377;
-  --rule:rgba(23,20,14,.35);
 }
 
 *{box-sizing:border-box}
@@ -55,10 +53,16 @@ body::after{
   padding:16px 16px 22px;
   position:relative;
   box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.45),
-    inset 0 -6px 14px rgba(0,0,0,.35),
-    0 26px 50px -18px rgba(0,0,0,.85),
-    0 3px 0 #6d5009;
+    /* bevel: lit from above, so top edge catches, left face brightens, right face falls off */
+    inset 0 2px 0 rgba(255,255,255,.55),
+    inset 2px 0 0 rgba(255,255,255,.13),
+    inset -2px 0 0 rgba(0,0,0,.15),
+    inset 0 -7px 16px rgba(0,0,0,.38),
+    /* two-tone extruded edge, then a tight contact shadow under the slab */
+    0 4px 0 #8a6708,
+    0 8px 0 #6d5009,
+    0 11px 3px -1px rgba(0,0,0,.45),
+    0 30px 54px -18px rgba(0,0,0,.9);
 }
 .handle{
   position:absolute;top:-13px;left:50%;transform:translateX(-50%);
@@ -68,8 +72,8 @@ body::after{
 }
 .rivet{
   position:absolute;width:12px;height:12px;border-radius:50%;
-  background:radial-gradient(circle at 34% 28%,#f3e2ab,#9c7c2c 58%,#4a3810);
-  box-shadow:inset 0 -1px 2px rgba(0,0,0,.6),0 1px 1px rgba(255,255,255,.25);
+  background:radial-gradient(circle at 34% 28%,#fbf1c6,#c8a23c 44%,#8a6b1e 70%,#3d2e0c);
+  box-shadow:inset 0 -1px 2px rgba(0,0,0,.65),0 1px 2px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.28);
 }
 .rivet.tl{top:11px;left:11px}.rivet.tr{top:11px;right:11px}
 .rivet.bl{bottom:11px;left:11px}.rivet.br{bottom:11px;right:11px}
@@ -96,8 +100,9 @@ body::after{
   position:relative;overflow:hidden;
   box-shadow:
     inset 0 0 0 3px #6d5009,
-    inset 0 5px 18px rgba(0,0,0,.32),
-    0 2px 0 rgba(255,255,255,.3);
+    inset 0 9px 20px rgba(0,0,0,.42),
+    inset 0 -4px 12px rgba(0,0,0,.2),
+    0 2px 0 rgba(255,255,255,.32);
 }
 .glass::after{
   content:'';position:absolute;inset:0;pointer-events:none;
@@ -148,7 +153,8 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) sa
 /* ---------- readouts ---------- */
 .readout{
   margin-top:14px;background:var(--panel);border:2px solid #6d5009;border-radius:6px;
-  padding:16px 16px 14px;box-shadow:inset 0 4px 16px rgba(0,0,0,.7);
+  padding:16px 16px 14px;
+  box-shadow:inset 0 5px 18px rgba(0,0,0,.75),0 1px 0 rgba(255,255,255,.26);
 }
 .big{
   font-family:'Share Tech Mono',monospace;
@@ -187,34 +193,14 @@ dl{margin:0}
   background:#0d0b08;padding:9px;border-radius:3px;
 }
 
-/* ---------- brass formula plate ---------- */
-.brass{
-  width:100%;max-width:660px;
-  background:linear-gradient(160deg,#c9a961,#8d6f2e 55%,#6b5220);
-  border-radius:5px;padding:16px 20px;color:#1c1508;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 10px 24px -12px rgba(0,0,0,.9);
-  display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;justify-content:center;
-  text-align:center;
-}
-.brass .eq{font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:700}
-.brass .note{font-size:14px;letter-spacing:.04em;color:rgba(28,21,8,.8)}
-
-/* ---------- prose ---------- */
-.brief{width:100%;max-width:660px}
-.brief h2{
+/* stamped into the case: dark ink for the cut, a light lip along the bottom edge
+   of each glyph for the burr the tool leaves behind */
+.engraved{
+  margin:18px 34px 0;text-align:center;
   font-family:'Big Shoulders Display',sans-serif;font-weight:700;
-  font-size:15px;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--case);margin:0 0 10px;
-  padding-bottom:7px;border-bottom:1px solid rgba(216,165,31,.3);
-}
-.brief p{margin:0 0 12px;color:rgba(239,231,210,.72);font-size:16.5px}
-.brief p b{color:var(--dial);font-weight:600}
-.brief ul{margin:0 0 12px;padding-left:18px;color:rgba(239,231,210,.72)}
-.brief li{margin-bottom:5px}
-.brief code{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--radium-hot)}
-footer{
-  width:100%;max-width:660px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(239,231,210,.32);text-align:center;border-top:1px solid rgba(239,231,210,.1);padding-top:14px;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(63,47,10,.55);
+  text-shadow:0 1px 0 rgba(255,255,255,.4);
 }
 
 @media (max-width:520px){
@@ -304,9 +290,9 @@ footer{
     </dl>
 
   </section>
-</main>
 
-<footer>Bureau of Gift Inflation &middot; Calibrated against Nothing &middot; Barry declined to participate</footer>
+  <p class="engraved">Bureau of Gift Inflation &middot; Calibrated against Nothing &middot; Barry declined to participate</p>
+</main>
 
 <script>
 (function(){
