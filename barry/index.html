@@ -174,9 +174,18 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) sa
   position:absolute;left:14px;top:0;bottom:0;
   display:none;align-items:center;pointer-events:none;
   font-family:'Share Tech Mono',monospace;font-size:19px;
-  color:rgba(168,209,106,.3);
+  color:rgba(168,209,106,.34);
+  animation:await 2.4s ease-in-out infinite;   /* an empty register waiting for input */
 }
 .datewrap.empty::after{display:flex}
+/* Desktop browsers print their own mm/dd/yyyy in the input's own colour, which
+   lands underneath ours. Make it transparent while the field is empty and
+   unfocused, then hand the field straight back the moment it is focused so the
+   real segments are there to type into. Colour-based so it works outside WebKit. */
+.datewrap.empty input{color:transparent}
+.datewrap.empty:focus-within input{color:var(--radium-hot)}
+.datewrap.empty:focus-within::after{display:none}
+@keyframes await{0%,100%{opacity:1}50%{opacity:.42}}
 
 .switch{
   display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;
@@ -334,6 +343,7 @@ dl{margin:0}
 @media (prefers-reduced-motion:reduce){
   #needle{transition:none}
   .lamp{transition:none}
+  .datewrap::after{animation:none}
 }
 </style>
 </head>
