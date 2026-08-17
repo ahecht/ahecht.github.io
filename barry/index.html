@@ -431,7 +431,8 @@ function update(){
   var vd=verdict(d);
   $('verdict').className='verdict'+(vd[0]?' '+vd[0]:'');
   $('v-tag').textContent=vd[1];
-  $('v-body').innerHTML=vd[2]+(analogy(d)?' '+analogy(d):'');
+  var an=analogy(d);
+  $('v-body').innerHTML=vd[2]+(an?'<br>'+an:'');
 
   $('needle').setAttribute('transform','rotate('+angOf(d).toFixed(2)+' '+CX+' '+CY+')');
 
@@ -440,6 +441,9 @@ function update(){
   $('full').hidden = d<=20;
 
   $('cpm').textContent=Math.round(rate()*60)+' CPM';
+  /* the pending click was timed against the old rate, so resample it; otherwise the
+     meter stays quiet for up to 12s after the needle has already swung */
+  if(on){ clearTimeout(timer); schedule(); }
 }
 
 /* ---------- geiger circuit ---------- */
