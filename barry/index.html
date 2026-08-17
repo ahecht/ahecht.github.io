@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Birthday Detector</title>
+<meta name="description" content="A survey meter for Barry's theory that the day before your birthday is your half birthday.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Barlow+Condensed:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --case:#d8a51f;
+  --case-lo:#a97e11;
+  --case-hi:#eec14f;
+  --panel:#2b2620;
+  --panel-lo:#191510;
+  --dial:#efe7d2;
+  --dial-lo:#d6cbaf;
+  --ink:#17140e;
+  --radium:#7fa650;
+  --radium-hot:#a8d16a;
+  --danger:#a8291b;
+  --steel:#8a8377;
+  --rule:rgba(23,20,14,.35);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:
+    radial-gradient(120% 90% at 50% -10%, #3b352c 0%, #16130f 60%, #0b0906 100%);
+  color:var(--dial);
+  font-family:'Barlow Condensed',system-ui,sans-serif;
+  font-size:17px;
+  line-height:1.45;
+  padding:28px 16px 70px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:26px;
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:99;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.055;mix-blend-mode:overlay;
+}
+
+/* ---------- the instrument ---------- */
+.meter{
+  width:100%;max-width:660px;
+  background:linear-gradient(168deg,var(--case-hi) 0%,var(--case) 26%,var(--case-lo) 100%);
+  border-radius:14px 14px 20px 20px;
+  padding:16px 16px 22px;
+  position:relative;
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.45),
+    inset 0 -6px 14px rgba(0,0,0,.35),
+    0 26px 50px -18px rgba(0,0,0,.85),
+    0 3px 0 #6d5009;
+}
+.handle{
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  width:130px;height:15px;border-radius:9px 9px 3px 3px;
+  background:linear-gradient(180deg,#4a443b,#221e18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 3px 6px rgba(0,0,0,.5);
+}
+.rivet{
+  position:absolute;width:12px;height:12px;border-radius:50%;
+  background:radial-gradient(circle at 34% 28%,#f3e2ab,#9c7c2c 58%,#4a3810);
+  box-shadow:inset 0 -1px 2px rgba(0,0,0,.6),0 1px 1px rgba(255,255,255,.25);
+}
+.rivet.tl{top:11px;left:11px}.rivet.tr{top:11px;right:11px}
+.rivet.bl{bottom:11px;left:11px}.rivet.br{bottom:11px;right:11px}
+
+.plate{text-align:center;padding:4px 34px 14px}
+.plate h1{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-weight:800;font-size:clamp(26px,6.4vw,46px);
+  line-height:.94;letter-spacing:.02em;text-transform:uppercase;
+  color:var(--ink);margin:0;
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+}
+.plate .sub{
+  font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(23,20,14,.72);margin-top:8px;font-weight:500;
+}
+.plate .sub b{font-weight:600;color:rgba(23,20,14,.9)}
+
+/* ---------- glass + gauge ---------- */
+.glass{
+  background:linear-gradient(180deg,var(--dial),var(--dial-lo));
+  border-radius:9px;
+  padding:10px 8px 4px;
+  position:relative;overflow:hidden;
+  box-shadow:
+    inset 0 0 0 3px #6d5009,
+    inset 0 5px 18px rgba(0,0,0,.32),
+    0 2px 0 rgba(255,255,255,.3);
+}
+.glass::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(112deg,rgba(255,255,255,.5) 0 26%,rgba(255,255,255,.05) 42%,transparent 58%);
+}
+svg.gauge{display:block;width:100%;height:auto}
+/* pivot comes from rotate(a 200 196) in the JS; a transform-origin here would compound with it */
+#needle{transition:transform .95s cubic-bezier(.18,1.32,.32,1)}
+.lamp{fill:#5c1f14;transition:fill .08s linear}
+.lamp.hot{fill:#ff5a34}
+
+/* ---------- controls ---------- */
+.controls{
+  display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;
+  margin-top:16px;
+}
+label.cap{
+  display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(23,20,14,.8);font-weight:600;margin-bottom:5px;
+}
+input[type=date]{
+  width:100%;font-family:'Share Tech Mono',monospace;font-size:19px;
+  padding:11px 12px;color:var(--radium-hot);
+  background:linear-gradient(180deg,#100e0b,#221d17);
+  border:2px solid #6d5009;border-radius:5px;
+  box-shadow:inset 0 3px 9px rgba(0,0,0,.8);
+}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) saturate(4) hue-rotate(45deg);cursor:pointer}
+:focus-visible{outline:3px solid #17140e;outline-offset:2px}
+
+.switch{
+  display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;
+  background:var(--panel);border:2px solid #6d5009;border-radius:5px;
+  padding:9px 12px;
+}
+.switch .track{
+  width:34px;height:20px;border-radius:3px;background:#0d0b08;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.9);position:relative;flex:none;
+}
+.switch .knob{
+  position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:2px;
+  background:linear-gradient(180deg,#cfc7b6,#7e7768);
+  transition:transform .15s ease, background .15s ease;
+}
+.switch.on .knob{transform:translateX(14px);background:linear-gradient(180deg,var(--radium-hot),#4f6d2c)}
+.switch span{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dial);font-weight:600}
+
+/* ---------- readouts ---------- */
+.readout{
+  margin-top:14px;background:var(--panel);border:2px solid #6d5009;border-radius:6px;
+  padding:16px 16px 14px;box-shadow:inset 0 4px 16px rgba(0,0,0,.7);
+}
+.big{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(38px,11vw,68px);line-height:1;
+  color:var(--radium-hot);text-align:center;
+  text-shadow:0 0 22px rgba(127,166,80,.55);
+  word-break:break-all;
+}
+.big sup{font-size:.52em;top:-.55em;position:relative}
+.bigcap{
+  text-align:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--steel);margin-bottom:9px;
+}
+.rows{margin-top:16px;border-top:1px solid rgba(239,231,210,.14)}
+.row{
+  display:flex;justify-content:space-between;gap:14px;align-items:baseline;
+  padding:8px 0;border-bottom:1px solid rgba(239,231,210,.09);
+}
+.row dt{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--steel)}
+.row dd{margin:0;font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--dial);text-align:right}
+dl{margin:0}
+.verdict{
+  margin-top:14px;padding:12px 14px;border-radius:4px;
+  background:rgba(127,166,80,.1);border-left:4px solid var(--radium);
+}
+.verdict.crit{background:rgba(168,41,27,.16);border-left-color:var(--danger)}
+.verdict .tag{
+  font-family:'Big Shoulders Display',sans-serif;font-weight:700;
+  font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:var(--radium-hot);
+}
+.verdict.crit .tag{color:#ff7454}
+.verdict p{margin:3px 0 0;font-size:16px;color:rgba(239,231,210,.86)}
+.full{
+  margin-top:10px;font-family:'Share Tech Mono',monospace;font-size:11px;
+  color:var(--radium);word-break:break-all;line-height:1.5;text-align:center;
+  background:#0d0b08;padding:9px;border-radius:3px;
+}
+
+/* ---------- brass formula plate ---------- */
+.brass{
+  width:100%;max-width:660px;
+  background:linear-gradient(160deg,#c9a961,#8d6f2e 55%,#6b5220);
+  border-radius:5px;padding:16px 20px;color:#1c1508;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 10px 24px -12px rgba(0,0,0,.9);
+  display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;justify-content:center;
+  text-align:center;
+}
+.brass .eq{font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:700}
+.brass .note{font-size:14px;letter-spacing:.04em;color:rgba(28,21,8,.8)}
+
+/* ---------- prose ---------- */
+.brief{width:100%;max-width:660px}
+.brief h2{
+  font-family:'Big Shoulders Display',sans-serif;font-weight:700;
+  font-size:15px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--case);margin:0 0 10px;
+  padding-bottom:7px;border-bottom:1px solid rgba(216,165,31,.3);
+}
+.brief p{margin:0 0 12px;color:rgba(239,231,210,.72);font-size:16.5px}
+.brief p b{color:var(--dial);font-weight:600}
+.brief ul{margin:0 0 12px;padding-left:18px;color:rgba(239,231,210,.72)}
+.brief li{margin-bottom:5px}
+.brief code{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--radium-hot)}
+footer{
+  width:100%;max-width:660px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(239,231,210,.32);text-align:center;border-top:1px solid rgba(239,231,210,.1);padding-top:14px;
+}
+
+@media (max-width:520px){
+  .plate{padding:4px 6px 12px}
+  .controls{grid-template-columns:1fr}
+  .row{flex-direction:column;gap:0}
+  .row dd{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){
+  #needle{transition:none}
+  .lamp{transition:none}
+}
+</style>
+</head>
+<body>
+
+<main class="meter">
+  <div class="handle"></div>
+  <i class="rivet tl"></i><i class="rivet tr"></i><i class="rivet bl"></i><i class="rivet br"></i>
+
+  <header class="plate">
+    <h1>Birthday Detector</h1>
+    <p class="sub">Model BW&#8209;1 &middot; Survey Meter &middot; <b>Range: 1 &rarr; 2<sup>&minus;365</sup></b></p>
+  </header>
+
+  <div class="glass">
+    <svg class="gauge" viewBox="0 0 400 232" role="img" aria-labelledby="gtitle">
+      <title id="gtitle">Analog meter showing days until the next birthday on a logarithmic scale</title>
+      <defs>
+        <linearGradient id="ndl" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3a2f22"/><stop offset="1" stop-color="#0e0b07"/>
+        </linearGradient>
+      </defs>
+
+      <path d="M 55.11 157.18 A 150 150 0 0 1 344.89 157.18" fill="none" stroke="#17140e" stroke-width="2.5"/>
+      <path d="M 295.93 80.68 A 150 150 0 0 1 344.89 157.18" fill="none" stroke="#a8291b" stroke-width="8" opacity=".85"/>
+      <g id="ticks"></g>
+      <g id="labels"></g>
+
+      <text x="200" y="118" text-anchor="middle" font-family="'Big Shoulders Display',sans-serif" font-weight="700" font-size="15" letter-spacing="3.5" fill="#17140e" opacity=".62">DAYS TO BIRTHDAY</text>
+      <text x="200" y="136" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="12" letter-spacing="1.6" fill="#17140e" opacity=".45">LOGARITHMIC &middot; PER BARRY'S METHOD</text>
+
+      <g id="needle">
+        <polygon points="200,64 196.2,196 203.8,196" fill="url(#ndl)"/>
+        <polygon points="197.5,196 202.5,196 202.5,214 197.5,214" fill="#0e0b07"/>
+      </g>
+      <circle cx="200" cy="196" r="13" fill="#2b2620"/>
+      <circle cx="200" cy="196" r="13" fill="none" stroke="#6d5009" stroke-width="2"/>
+      <circle cx="200" cy="192" r="4" fill="#6b6355" opacity=".7"/>
+
+      <circle class="lamp" id="lamp" cx="62" cy="200" r="8"/>
+      <circle cx="62" cy="200" r="8" fill="none" stroke="#17140e" stroke-width="2" opacity=".6"/>
+      <text x="62" y="222" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" letter-spacing="1.4" fill="#17140e" opacity=".55">COUNT</text>
+
+      <text x="338" y="204" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="15" fill="#17140e" id="cpm">0 CPM</text>
+      <text x="338" y="222" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" letter-spacing="1.4" fill="#17140e" opacity=".55">ACTIVITY</text>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <div>
+      <label class="cap" for="dob">Subject date of birth</label>
+      <input type="date" id="dob">
+    </div>
+    <div class="switch on" id="audio" role="switch" aria-checked="true" tabindex="0">
+      <div class="track"><div class="knob"></div></div>
+      <span>Audio</span>
+    </div>
+  </div>
+
+  <section class="readout">
+    <div class="verdict" id="verdict">
+      <div class="tag" id="v-tag">Standby</div>
+      <p id="v-body">Enter a date of birth. The meter reads Barry's system, not reality.</p>
+    </div>
+
+    <p class="bigcap" id="cap">Awaiting subject</p>
+    <div class="big" id="big">&mdash;</div>
+    <div class="full" id="full" hidden></div>
+
+    <dl class="rows">
+      <div class="row"><dt>Next birthday</dt><dd id="r-date">&mdash;</dd></div>
+      <div class="row"><dt>Days out (d)</dt><dd id="r-days">&mdash;</dd></div>
+      <div class="row"><dt>As a decimal</dt><dd id="r-dec">&mdash;</dd></div>
+      <div class="row"><dt>Digits in denominator</dt><dd id="r-dig">&mdash;</dd></div>
+      <div class="row"><dt>Real half-birthday</dt><dd id="r-half">&mdash;</dd></div>
+    </dl>
+
+  </section>
+</main>
+
+<div class="brass">
+  <span class="eq">f = 2<sup>&minus;d</sup></span>
+</div>
+
+<footer>Bureau of Gift Inflation &middot; Calibrated against Nothing &middot; Barry declined to participate</footer>
+
+<script>
+(function(){
+'use strict';
+
+var MAXD = 365;
+var LOG2 = Math.log10(2);
+
+/* ---------- dial geometry ---------- */
+var CX=200, CY=196, R=150, SPAN=75;
+function tOf(d){ return 1 - Math.log(1+Math.min(d,MAXD))/Math.log(1+MAXD); }
+function angOf(d){ return -SPAN + 2*SPAN*tOf(d); }
+function pt(a,r){ var t=a*Math.PI/180; return [CX+r*Math.sin(t), CY-r*Math.cos(t)]; }
+
+var MAJOR=[0,1,2,3,5,7,14,30,90,365];
+var MINOR=[4,6,9,10,20,45,60,120,180,240,300];
+(function drawDial(){
+  var tk='',lb='';
+  MINOR.forEach(function(d){
+    var a=angOf(d), p1=pt(a,150), p2=pt(a,140);
+    tk+='<line x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'" stroke="#17140e" stroke-width="1.4" opacity=".5"/>';
+  });
+  MAJOR.forEach(function(d){
+    var a=angOf(d), p1=pt(a,150), p2=pt(a,133), p3=pt(a,122);
+    tk+='<line x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'" stroke="#17140e" stroke-width="3"/>';
+    lb+='<text x="'+p3[0].toFixed(1)+'" y="'+(p3[1]+4).toFixed(1)+'" text-anchor="middle" font-family="\'Share Tech Mono\',monospace" font-size="13" fill="#17140e">'+d+'</text>';
+  });
+  document.getElementById('ticks').innerHTML=tk;
+  document.getElementById('labels').innerHTML=lb;
+})();
+
+/* ---------- date helpers ---------- */
+function parseISO(s){
+  var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');
+  return m ? {y:+m[1], m:+m[2], d:+m[3]} : null;
+}
+function isLeap(y){ return (y%4===0 && y%100!==0) || y%400===0; }
+function occurrence(y,mo,da){
+  if(mo===2 && da===29 && !isLeap(y)) return new Date(y,2,1);
+  return new Date(y,mo-1,da);
+}
+function midnight(dt){ return new Date(dt.getFullYear(),dt.getMonth(),dt.getDate()); }
+function addDays(dt,n){ var c=new Date(dt.getTime()); c.setDate(c.getDate()+n); return c; }
+function fmt(dt){
+  return dt.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+}
+
+/* ---------- number helpers ---------- */
+function sci(d){
+  var e10=-d*LOG2, e=Math.floor(e10), m=Math.pow(10,e10-e);
+  if(d===0) return '1.000';
+  return m.toFixed(3)+' \u00d7 10<sup>'+e+'</sup>';
+}
+function grouped(str){ return str.replace(/\B(?=(\d{3})+(?!\d))/g,'\u2009'); }
+
+var ANCHORS=[
+  {l:3.56,t:'seconds in an hour'},
+  {l:4.9, t:'people at a sold-out stadium'},
+  {l:6.9, t:'people living in Washington State'},
+  {l:9.5, t:'seconds in a century'},
+  {l:11.6,t:'stars in the Milky Way'},
+  {l:13.5,t:'cells in a human body'},
+  {l:18.9,t:'grains of sand on every beach on Earth'},
+  {l:21.1,t:'liters of water in all the oceans'},
+  {l:22.3,t:'stars in the observable universe'},
+  {l:27.8,t:'atoms in a human body'},
+  {l:50.1,t:'atoms in the planet Earth'},
+  {l:80,  t:'atoms in the observable universe'}
+];
+function analogy(d){
+  var L=d*LOG2;
+  if(L<2) return '';
+  if(L>81.5) return 'That denominator exceeds the number of atoms in the observable universe by a factor of about 10<sup>'+Math.round(L-80)+'</sup>.';
+  var best=ANCHORS[0], bd=1e9;
+  ANCHORS.forEach(function(a){ var x=Math.abs(a.l-L); if(x<bd){bd=x;best=a;} });
+  if(bd<1.4) return 'The denominator is roughly the number of '+best.t+'.';
+  return 'The denominator is a '+(Math.floor(L)+1)+'-digit number.';
+}
+
+/* ---------- state ---------- */
+var state={d:null};
+var $=function(id){return document.getElementById(id);};
+
+function verdict(d){
+  if(d===0) return ['crit','Critical','Actual birthday detected. Full celebratory yield.'];
+  if(d===1) return ['crit','"Half" birthday detected','Claim under review.'];
+  if(d===2) return ['','"Quarter" birthday detected','Gifts should be reduced proportionally.'];
+  if(d<=6)  return ['','Elevated chance of birthday','Detectable by instruments only, no cake.'];
+  if(d<=13) return ['','Trace','A birthday in the same sense that a radio station you can\'t actually hear is music.'];
+  if(d<=59) return ['','Schrodinger\'s birthday','The needle is in the box, but you don\'t know which side it\'s on.'];
+  return ['','Background','Indistinguishable from any other day of the year.'];
+}
+
+function update(){
+  var v=parseISO($('dob').value);
+  if(!v){ return; }
+  var today=midnight(new Date());
+  var nxt=occurrence(today.getFullYear(),v.m,v.d);
+  if(nxt<today) nxt=occurrence(today.getFullYear()+1,v.m,v.d);
+  var d=Math.round((nxt-today)/86400000);
+  state.d=d;
+
+  /* headline fraction */
+  var den=(1n<<BigInt(d)).toString();
+  $('big').innerHTML = d===0 ? '1' : (d<=20 ? '1/'+grouped(den) : '1 / 2<sup>'+d+'</sup>');
+  $('cap').textContent = d===0 ? 'Reading' : 'Fraction of a birthday';
+
+  $('r-date').textContent=fmt(nxt);
+  $('r-days').textContent=d+(d===1?' day':' days');
+  $('r-dec').innerHTML=sci(d);
+  $('r-dig').textContent=den.length+(den.length===1?' digit':' digits');
+
+  var half=addDays(nxt,-183);
+  if(half<today) half=addDays(nxt,182);
+  var nb=occurrence(half.getFullYear(),v.m,v.d);
+  if(nb<half) nb=occurrence(half.getFullYear()+1,v.m,v.d);
+  var hd=Math.round((nb-half)/86400000);
+  $('r-half').innerHTML=fmt(half)+' \u2192 reads 1/2<sup>'+hd+'</sup>';
+
+  var vd=verdict(d);
+  $('verdict').className='verdict'+(vd[0]?' '+vd[0]:'');
+  $('v-tag').textContent=vd[1];
+  $('v-body').innerHTML=vd[2]+(analogy(d)?' '+analogy(d):'');
+
+  $('needle').setAttribute('transform','rotate('+angOf(d).toFixed(2)+' '+CX+' '+CY+')');
+
+  /* hidden only when .big already spells the fraction out, to avoid printing it twice */
+  $('full').textContent=grouped(den);
+  $('full').hidden = d<=20;
+
+  $('cpm').textContent=Math.round(rate()*60)+' CPM';
+}
+
+/* ---------- geiger circuit ---------- */
+function rate(){
+  if(state.d===null) return 0.12;
+  return Math.max(0.12, 55*Math.pow(2,-state.d));
+}
+var ctx=null, on=false, timer=null, noise=null, gestured=false;
+function buildNoise(){
+  var n=Math.floor(ctx.sampleRate*0.05), b=ctx.createBuffer(1,n,ctx.sampleRate), c=b.getChannelData(0);
+  for(var i=0;i<n;i++) c[i]=(Math.random()*2-1)*Math.pow(1-i/n,9);
+  noise=b;
+}
+function blip(){
+  var lamp=$('lamp');
+  lamp.classList.add('hot');
+  setTimeout(function(){lamp.classList.remove('hot');},55);
+  if(!ctx) return;
+  var s=ctx.createBufferSource(); s.buffer=noise; s.playbackRate.value=0.85+Math.random()*0.5;
+  var f=ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=1700+Math.random()*1100; f.Q.value=1.1;
+  var g=ctx.createGain(); g.gain.value=0.22;
+  s.connect(f); f.connect(g); g.connect(ctx.destination); s.start();
+}
+function schedule(){
+  if(!on) return;
+  var w=-Math.log(1-Math.random())/rate()*1000;
+  timer=setTimeout(function(){ if(on){ blip(); schedule(); } }, Math.min(w,12000));
+}
+/* Browsers refuse to start audio before a user gesture, so the meter boots with the
+   switch on and the lamp ticking silently; the sound joins on the first interaction.
+   blip() already flashes the lamp before it checks for a context, so the visual half
+   of the circuit runs either way. */
+function ensureCtx(){
+  if(!gestured) return;
+  if(!ctx){ ctx=new (window.AudioContext||window.webkitAudioContext)(); buildNoise(); }
+  if(ctx.state==='suspended') ctx.resume();
+}
+function noteGesture(){
+  if(gestured) return;
+  gestured=true;
+  if(on) ensureCtx();
+}
+function setAudio(next){
+  on=next;
+  var el=$('audio');
+  el.classList.toggle('on',on);
+  el.setAttribute('aria-checked',String(on));
+  clearTimeout(timer);
+  if(on){ ensureCtx(); schedule(); }
+}
+
+/* ---------- wiring ---------- */
+/* capture phase, so the gesture is banked before the switch's own handlers run */
+['pointerdown','touchstart','keydown'].forEach(function(ev){
+  document.addEventListener(ev,noteGesture,true);
+});
+
+$('dob').addEventListener('input',update);
+$('audio').addEventListener('click',function(){ setAudio(!on); });
+$('audio').addEventListener('keydown',function(e){
+  if(e.key===' '||e.key==='Enter'){ e.preventDefault(); setAudio(!on); }
+});
+$('needle').setAttribute('transform','rotate('+angOf(365).toFixed(2)+' '+CX+' '+CY+')');
+$('cpm').textContent=Math.round(rate()*60)+' CPM';
+setAudio(true);
+})();
+</script>
+</body>
+</html>
