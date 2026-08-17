@@ -10,17 +10,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Barlow+Condensed:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root{
-  --case:#d8a51f;
-  --case-lo:#a97e11;
-  --case-hi:#eec14f;
-  --panel:#2b2620;
-  --dial:#efe7d2;
-  --dial-lo:#d6cbaf;
+  /* aged enamel: the mustard has gone chalky and the dial paper has yellowed */
+  --case:#b8912a;
+  --case-lo:#7d6114;
+  --case-hi:#cfae52;
+  --panel:#26221c;
+  --dial:#ddd2b4;
+  --dial-lo:#bcad89;
   --ink:#17140e;
   --radium:#7fa650;
   --radium-hot:#a8d16a;
-  --danger:#a8291b;
-  --steel:#8a8377;
+  --danger:#8f2417;
+  --steel:#847d70;
 }
 
 *{box-sizing:border-box}
@@ -28,7 +29,7 @@ html{-webkit-text-size-adjust:100%}
 body{
   margin:0;
   background:
-    radial-gradient(120% 90% at 50% -10%, #3b352c 0%, #16130f 60%, #0b0906 100%);
+    radial-gradient(120% 90% at 50% -10%, #33301f 0%, #14120c 62%, #070603 100%);
   color:var(--dial);
   font-family:'Barlow Condensed',system-ui,sans-serif;
   font-size:17px;
@@ -42,27 +43,37 @@ body{
 body::after{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:99;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity:.055;mix-blend-mode:overlay;
+  opacity:.11;mix-blend-mode:overlay;
 }
 
 /* ---------- the instrument ---------- */
 .meter{
   width:100%;max-width:660px;
-  background:linear-gradient(168deg,var(--case-hi) 0%,var(--case) 26%,var(--case-lo) 100%);
+  /* layers paint front-to-back: grime and scratches sit over the base coat, and
+     all of it stays behind the case's children */
+  background:
+    radial-gradient(58% 44% at 16% 10%, rgba(48,34,8,.30), transparent 70%),
+    radial-gradient(44% 36% at 88% 26%, rgba(30,22,6,.27), transparent 72%),
+    radial-gradient(40% 30% at 72% 92%, rgba(44,32,8,.25), transparent 70%),
+    radial-gradient(26% 22% at 6% 78%, rgba(26,19,5,.23), transparent 68%),
+    radial-gradient(20% 16% at 46% 54%, rgba(52,38,10,.16), transparent 72%),
+    repeating-linear-gradient(97deg, rgba(255,255,255,.05) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(81deg, rgba(0,0,0,.055) 0 1px, transparent 1px 9px),
+    linear-gradient(168deg,var(--case-hi) 0%,var(--case) 26%,var(--case-lo) 100%);
   border-radius:14px 14px 20px 20px;
   padding:16px 16px 22px;
   position:relative;
   box-shadow:
     /* bevel: lit from above, so top edge catches, left face brightens, right face falls off */
-    inset 0 2px 0 rgba(255,255,255,.55),
-    inset 2px 0 0 rgba(255,255,255,.13),
-    inset -2px 0 0 rgba(0,0,0,.15),
-    inset 0 -7px 16px rgba(0,0,0,.38),
+    inset 0 2px 0 rgba(255,255,255,.4),
+    inset 2px 0 0 rgba(255,255,255,.1),
+    inset -2px 0 0 rgba(0,0,0,.18),
+    inset 0 -7px 16px rgba(0,0,0,.44),
     /* two-tone extruded edge, then a tight contact shadow under the slab */
-    0 4px 0 #8a6708,
-    0 8px 0 #6d5009,
-    0 11px 3px -1px rgba(0,0,0,.45),
-    0 30px 54px -18px rgba(0,0,0,.9);
+    0 4px 0 #6a5210,
+    0 8px 0 #4e3c0a,
+    0 11px 3px -1px rgba(0,0,0,.5),
+    0 30px 54px -18px rgba(0,0,0,.92);
 }
 .handle{
   position:absolute;top:-13px;left:50%;transform:translateX(-50%);
@@ -72,8 +83,9 @@ body::after{
 }
 .rivet{
   position:absolute;width:12px;height:12px;border-radius:50%;
-  background:radial-gradient(circle at 34% 28%,#fbf1c6,#c8a23c 44%,#8a6b1e 70%,#3d2e0c);
-  box-shadow:inset 0 -1px 2px rgba(0,0,0,.65),0 1px 2px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.28);
+  /* brass that stopped being polished a long time ago */
+  background:radial-gradient(circle at 34% 28%,#e2d09a,#a3842c 42%,#634c14 70%,#241a06);
+  box-shadow:inset 0 -1px 2px rgba(0,0,0,.72),0 1px 2px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.18);
 }
 .rivet.tl{top:11px;left:11px}.rivet.tr{top:11px;right:11px}
 .rivet.bl{bottom:11px;left:11px}.rivet.br{bottom:11px;right:11px}
@@ -83,30 +95,45 @@ body::after{
   font-family:'Big Shoulders Display',sans-serif;
   font-weight:800;font-size:clamp(26px,6.4vw,46px);
   line-height:.94;letter-spacing:.02em;text-transform:uppercase;
-  color:var(--ink);margin:0;
-  text-shadow:0 1px 0 rgba(255,255,255,.35);
+  /* stencilled paint that has worn thin, not fresh ink */
+  color:rgba(19,15,6,.88);margin:0;
+  text-shadow:0 -1px 0 rgba(0,0,0,.2),0 1px 0 rgba(255,255,255,.3);
 }
 .plate .sub{
   font-size:12px;letter-spacing:.22em;text-transform:uppercase;
-  color:rgba(23,20,14,.72);margin-top:8px;font-weight:500;
+  color:rgba(23,20,14,.58);margin-top:8px;font-weight:500;
 }
-.plate .sub b{font-weight:600;color:rgba(23,20,14,.9)}
+.plate .sub b{font-weight:600;color:rgba(23,20,14,.74)}
 
 /* ---------- glass + gauge ---------- */
 .glass{
-  background:linear-gradient(180deg,var(--dial),var(--dial-lo));
+  /* foxing in the dial paper, under the printed markings */
+  background:
+    radial-gradient(66% 48% at 20% 16%, rgba(122,96,38,.20), transparent 68%),
+    radial-gradient(52% 40% at 84% 78%, rgba(96,76,28,.24), transparent 70%),
+    radial-gradient(34% 30% at 58% 34%, rgba(138,110,44,.13), transparent 72%),
+    linear-gradient(180deg,var(--dial),var(--dial-lo));
   border-radius:9px;
   padding:10px 8px 4px;
   position:relative;overflow:hidden;
   box-shadow:
-    inset 0 0 0 3px #6d5009,
-    inset 0 9px 20px rgba(0,0,0,.42),
-    inset 0 -4px 12px rgba(0,0,0,.2),
-    0 2px 0 rgba(255,255,255,.32);
+    inset 0 0 0 3px #5c4307,
+    inset 0 9px 20px rgba(0,0,0,.46),
+    inset 0 -4px 12px rgba(0,0,0,.22),
+    0 2px 0 rgba(255,255,255,.26);
+}
+/* grime on the cover glass: paints above the dial, below the specular sheen */
+.glass::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:
+    radial-gradient(122% 92% at 50% 46%, transparent 36%, rgba(32,23,7,.36) 100%),
+    radial-gradient(16% 24% at 11% 84%, rgba(40,29,9,.30), transparent 70%),
+    radial-gradient(13% 19% at 89% 18%, rgba(40,29,9,.27), transparent 70%),
+    radial-gradient(9% 14% at 68% 63%, rgba(40,29,9,.22), transparent 72%);
 }
 .glass::after{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(112deg,rgba(255,255,255,.5) 0 26%,rgba(255,255,255,.05) 42%,transparent 58%);
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:linear-gradient(112deg,rgba(255,255,255,.34) 0 26%,rgba(255,255,255,.04) 42%,transparent 58%);
 }
 svg.gauge{display:block;width:100%;height:auto}
 /* pivot comes from rotate(a 200 196) in the JS; a transform-origin here would compound with it */
@@ -127,7 +154,7 @@ input[type=date]{
   width:100%;font-family:'Share Tech Mono',monospace;font-size:19px;
   padding:11px 12px;color:var(--radium-hot);
   background:linear-gradient(180deg,#100e0b,#221d17);
-  border:2px solid #6d5009;border-radius:5px;
+  border:2px solid #54400a;border-radius:5px;
   box-shadow:inset 0 3px 9px rgba(0,0,0,.8);
 }
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) saturate(4) hue-rotate(45deg);cursor:pointer}
@@ -135,7 +162,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) sa
 
 .switch{
   display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;
-  background:var(--panel);border:2px solid #6d5009;border-radius:5px;
+  background:var(--panel);border:2px solid #54400a;border-radius:5px;
   padding:9px 12px;
 }
 .switch .track{
@@ -152,9 +179,14 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) sa
 
 /* ---------- readouts ---------- */
 .readout{
-  margin-top:14px;background:var(--panel);border:2px solid #6d5009;border-radius:6px;
+  margin-top:14px;
+  background:
+    radial-gradient(58% 46% at 18% 10%, rgba(74,64,44,.34), transparent 70%),
+    radial-gradient(48% 40% at 86% 90%, rgba(58,50,34,.30), transparent 72%),
+    var(--panel);
+  border:2px solid #54400a;border-radius:6px;
   padding:16px 16px 14px;
-  box-shadow:inset 0 5px 18px rgba(0,0,0,.75),0 1px 0 rgba(255,255,255,.26);
+  box-shadow:inset 0 5px 18px rgba(0,0,0,.78),0 1px 0 rgba(255,255,255,.22);
 }
 .big{
   font-family:'Share Tech Mono',monospace;
@@ -193,14 +225,16 @@ dl{margin:0}
   background:#0d0b08;padding:9px;border-radius:3px;
 }
 
-/* stamped into the case: dark ink for the cut, a light lip along the bottom edge
-   of each glyph for the burr the tool leaves behind */
+/* stamped into the case and paint-filled: black enamel in the groove, a shadowed
+   upper wall, and a lit lower lip where the tool broke the surface */
 .engraved{
   margin:18px 34px 0;text-align:center;
   font-family:'Big Shoulders Display',sans-serif;font-weight:700;
-  font-size:11px;letter-spacing:.2em;text-transform:uppercase;
-  color:rgba(63,47,10,.55);
-  text-shadow:0 1px 0 rgba(255,255,255,.4);
+  font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:#0d0a04;
+  text-shadow:
+    0 -1px 0 rgba(0,0,0,.34),
+    0 1px 0 rgba(255,255,255,.38);
 }
 
 @media (max-width:520px){
@@ -235,28 +269,37 @@ dl{margin:0}
         </linearGradient>
       </defs>
 
-      <path d="M 55.11 157.18 A 150 150 0 0 1 344.89 157.18" fill="none" stroke="#17140e" stroke-width="2.5"/>
-      <path d="M 295.93 80.68 A 150 150 0 0 1 344.89 157.18" fill="none" stroke="#a8291b" stroke-width="8" opacity=".85"/>
+      <!-- the printed scale has faded unevenly; the danger band worst of all -->
+      <path d="M 55.11 157.18 A 150 150 0 0 1 344.89 157.18" fill="none" stroke="#17140e" stroke-width="2.5" opacity=".68" stroke-dasharray="34 1.2 19 0.8 47 1.6 26 1 61 1.3"/>
+      <path d="M 295.93 80.68 A 150 150 0 0 1 344.89 157.18" fill="none" stroke="#8f2417" stroke-width="8" opacity=".52" stroke-dasharray="21 1.4 13 2.1 38 1.2"/>
       <g id="ticks"></g>
       <g id="labels"></g>
 
-      <text x="200" y="118" text-anchor="middle" font-family="'Big Shoulders Display',sans-serif" font-weight="700" font-size="15" letter-spacing="3.5" fill="#17140e" opacity=".62">DAYS TO BIRTHDAY</text>
-      <text x="200" y="136" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="12" letter-spacing="1.6" fill="#17140e" opacity=".45">LOGARITHMIC &middot; PER BARRY MATH</text>
+      <text x="200" y="118" text-anchor="middle" font-family="'Big Shoulders Display',sans-serif" font-weight="700" font-size="15" letter-spacing="3.5" fill="#17140e" opacity=".44">DAYS TO BIRTHDAY</text>
+      <text x="200" y="136" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="12" letter-spacing="1.6" fill="#17140e" opacity=".3">LOGARITHMIC &middot; PER BARRY MATH</text>
 
       <g id="needle">
         <polygon points="200,64 196.2,196 203.8,196" fill="url(#ndl)"/>
         <polygon points="197.5,196 202.5,196 202.5,214 197.5,214" fill="#0e0b07"/>
       </g>
       <circle cx="200" cy="196" r="13" fill="#2b2620"/>
-      <circle cx="200" cy="196" r="13" fill="none" stroke="#6d5009" stroke-width="2"/>
+      <circle cx="200" cy="196" r="13" fill="none" stroke="#54400a" stroke-width="2"/>
       <circle cx="200" cy="192" r="4" fill="#6b6355" opacity=".7"/>
 
       <circle class="lamp" id="lamp" cx="62" cy="200" r="8"/>
-      <circle cx="62" cy="200" r="8" fill="none" stroke="#17140e" stroke-width="2" opacity=".6"/>
-      <text x="62" y="222" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" letter-spacing="1.4" fill="#17140e" opacity=".55">COUNT</text>
+      <circle cx="62" cy="200" r="8" fill="none" stroke="#17140e" stroke-width="2" opacity=".45"/>
+      <text x="62" y="222" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" letter-spacing="1.4" fill="#17140e" opacity=".38">COUNT</text>
 
-      <text x="338" y="204" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="15" fill="#17140e" id="cpm">0 CPM</text>
-      <text x="338" y="222" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" letter-spacing="1.4" fill="#17140e" opacity=".55">ACTIVITY</text>
+      <text x="338" y="204" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="15" fill="#17140e" opacity=".8" id="cpm">0 CPM</text>
+      <text x="338" y="222" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="10" letter-spacing="1.4" fill="#17140e" opacity=".38">ACTIVITY</text>
+
+      <!-- hairline crack in the cover glass, upper left where the dial is empty -->
+      <g fill="none" stroke="#141008" stroke-linecap="round" opacity=".2">
+        <path d="M 4 17 L 31 34 L 49 29 L 74 46 L 93 41" stroke-width="1"/>
+        <path d="M 31 34 L 38 15" stroke-width=".7"/>
+        <path d="M 49 29 L 60 12" stroke-width=".6"/>
+        <path d="M 74 46 L 81 63" stroke-width=".6"/>
+      </g>
     </svg>
   </div>
 
@@ -309,16 +352,19 @@ function pt(a,r){ var t=a*Math.PI/180; return [CX+r*Math.sin(t), CY-r*Math.cos(t
 
 var MAJOR=[0,1,2,3,5,7,14,30,90,365];
 var MINOR=[4,6,9,10,20,45,60,120,180,240,300];
+/* runs once at load, so the jitter is baked in for the session: ink that faded
+   unevenly and numerals stamped a hair off true */
+function wear(lo,hi){ return (lo+Math.random()*(hi-lo)).toFixed(2); }
 (function drawDial(){
   var tk='',lb='';
   MINOR.forEach(function(d){
     var a=angOf(d), p1=pt(a,150), p2=pt(a,140);
-    tk+='<line x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'" stroke="#17140e" stroke-width="1.4" opacity=".5"/>';
+    tk+='<line x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'" stroke="#17140e" stroke-width="1.4" opacity="'+wear(.22,.44)+'"/>';
   });
   MAJOR.forEach(function(d){
     var a=angOf(d), p1=pt(a,150), p2=pt(a,133), p3=pt(a,122);
-    tk+='<line x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'" stroke="#17140e" stroke-width="3"/>';
-    lb+='<text x="'+p3[0].toFixed(1)+'" y="'+(p3[1]+4).toFixed(1)+'" text-anchor="middle" font-family="\'Share Tech Mono\',monospace" font-size="13" fill="#17140e">'+d+'</text>';
+    tk+='<line x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'" stroke="#17140e" stroke-width="'+wear(2.5,3.1)+'" opacity="'+wear(.55,.82)+'"/>';
+    lb+='<text x="'+(p3[0]+(Math.random()-.5)*1.4).toFixed(1)+'" y="'+(p3[1]+4+(Math.random()-.5)*1.2).toFixed(1)+'" text-anchor="middle" font-family="\'Share Tech Mono\',monospace" font-size="13" fill="#17140e" opacity="'+wear(.5,.78)+'" transform="rotate('+((Math.random()-.5)*2.4).toFixed(2)+' '+p3[0].toFixed(1)+' '+p3[1].toFixed(1)+')">'+d+'</text>';
   });
   document.getElementById('ticks').innerHTML=tk;
   document.getElementById('labels').innerHTML=lb;
