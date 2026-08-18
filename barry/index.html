@@ -146,46 +146,36 @@ svg.gauge{display:block;width:100%;height:auto}
   display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;
   margin-top:16px;
 }
-label.cap{
+.cap{
   display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
   color:rgba(23,20,14,.8);font-weight:600;margin-bottom:5px;
 }
-input[type=date]{
-  width:100%;font-family:'Share Tech Mono',monospace;font-size:19px;
-  padding:11px 12px;color:var(--radium-hot);
-  background:linear-gradient(180deg,#100e0b,#221d17);
+/* month and day only: the year is not part of the calculation, and asking for it
+   invites a date decades back when what is wanted is the recurring day */
+.datefield{display:flex;align-items:center;gap:9px}
+.datefield select{
+  font-family:'Share Tech Mono',monospace;font-size:19px;
+  padding:11px 30px 11px 13px;color:var(--radium-hot);
+  text-shadow:0 0 8px rgba(127,166,80,.45);
   border:2px solid #54400a;border-radius:5px;
   box-shadow:inset 0 3px 9px rgba(0,0,0,.8);
-  /* iOS sizes date inputs on its own metrics unless appearance is reset, which is
-     what stretched the field and pushed the value out of the visible box */
   -webkit-appearance:none;appearance:none;
-  min-height:48px;
+  min-height:48px;cursor:pointer;
+  /* the two 45deg wedges draw the caret that appearance:none removes */
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(168,209,106,.55) 50%),
+    linear-gradient(135deg, rgba(168,209,106,.55) 50%, transparent 50%),
+    linear-gradient(180deg,#100e0b,#221d17);
+  background-position:calc(100% - 17px) calc(50% + 1px), calc(100% - 12px) calc(50% + 1px), 0 0;
+  background-size:5px 5px, 5px 5px, 100% 100%;
+  background-repeat:no-repeat;
 }
-input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0;line-height:normal}
-input[type=date]::-webkit-datetime-edit{padding:0;line-height:normal}
-input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) saturate(4) hue-rotate(45deg);cursor:pointer}
-:focus-visible{outline:3px solid #17140e;outline-offset:2px}
-
-/* iOS shows nothing at all in an empty date field, so stand in for the missing
-   placeholder; .empty is toggled from the script */
-.datewrap{position:relative;display:block}
-.datewrap::after{
-  content:attr(data-ph);
-  position:absolute;left:14px;top:0;bottom:0;
-  display:none;align-items:center;pointer-events:none;
+.datefield select option{background:#12100b;color:#a8d16a}
+.datefield .sep{
   font-family:'Share Tech Mono',monospace;font-size:19px;
-  color:rgba(168,209,106,.34);
-  animation:await 2.4s ease-in-out infinite;   /* an empty register waiting for input */
+  color:rgba(168,209,106,.4);
 }
-.datewrap.empty::after{display:flex}
-/* Desktop browsers print their own mm/dd/yyyy in the input's own colour, which
-   lands underneath ours. Make it transparent while the field is empty and
-   unfocused, then hand the field straight back the moment it is focused so the
-   real segments are there to type into. Colour-based so it works outside WebKit. */
-.datewrap.empty input{color:transparent}
-.datewrap.empty:focus-within input{color:var(--radium-hot)}
-.datewrap.empty:focus-within::after{display:none}
-@keyframes await{0%,100%{opacity:1}50%{opacity:.42}}
+:focus-visible{outline:3px solid #17140e;outline-offset:2px}
 
 .switch{
   display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;
@@ -351,8 +341,6 @@ dl{margin:0}
   .plate{padding:4px 6px 12px}
   /* stacked, but sized to content so neither control reads as a full-width slab */
   .controls{grid-template-columns:1fr;justify-items:start;gap:10px}
-  .datewrap{width:max-content}
-  input[type=date]{width:auto;min-width:12.5em}
   /* one line per clause instead of an arbitrary wrap mid-phrase */
   .engraved{line-height:2}
   .engraved span{display:block}
@@ -363,7 +351,6 @@ dl{margin:0}
 @media (prefers-reduced-motion:reduce){
   #needle{transition:none}
   .lamp{transition:none}
-  .datewrap::after{animation:none}
 }
 </style>
 </head>
@@ -423,8 +410,12 @@ dl{margin:0}
 
   <div class="controls">
     <div>
-      <label class="cap" for="dob">Subject date of birth</label>
-      <span class="datewrap" data-ph="-- / -- / ----"><input type="date" id="dob"></span>
+      <span class="cap" id="dob-cap">Subject birthday</span>
+      <div class="datefield" role="group" aria-labelledby="dob-cap">
+        <select id="mon" aria-label="Birthday month"></select>
+        <span class="sep">/</span>
+        <select id="day" aria-label="Birthday day"></select>
+      </div>
     </div>
     <div class="switch on" id="audio" role="switch" aria-checked="true" tabindex="0">
       <div class="track"><div class="knob"></div></div>
@@ -495,10 +486,6 @@ function wear(lo,hi){ return (lo+Math.random()*(hi-lo)).toFixed(2); }
 })();
 
 /* ---------- date helpers ---------- */
-function parseISO(s){
-  var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');
-  return m ? {y:+m[1], m:+m[2], d:+m[3]} : null;
-}
 function isLeap(y){ return (y%4===0 && y%100!==0) || y%400===0; }
 function occurrence(y,mo,da){
   if(mo===2 && da===29 && !isLeap(y)) return new Date(y,2,1);
@@ -558,18 +545,30 @@ function verdict(d){
   return ['','Background Birthday','Indistinguishable from any other day of the year.'];
 }
 
-/* stands in for the placeholder iOS refuses to draw on an empty date field */
-function syncDateField(){
-  document.querySelector('.datewrap').classList.toggle('empty', !$('dob').value);
+var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+/* February carries 29: occurrence() rolls a leap-day birthday to Mar 1 in common years */
+var DAYS_IN=[31,29,31,30,31,30,31,31,30,31,30,31];
+
+function fillDays(){
+  var sel=$('day'), keep=+sel.value, mo=+$('mon').value;
+  var max=mo?DAYS_IN[mo-1]:31, h='<option value="">--</option>';
+  for(var n=1;n<=max;n++) h+='<option value="'+n+'">'+(n<10?'0':'')+n+'</option>';
+  sel.innerHTML=h;
+  if(keep && keep<=max) sel.value=keep;   /* Feb 30 selected then month changed: drop it */
 }
+(function buildDateControls(){
+  var h='<option value="">--</option>';
+  MONTHS.forEach(function(name,i){ h+='<option value="'+(i+1)+'">'+name.toUpperCase()+'</option>'; });
+  $('mon').innerHTML=h;
+  fillDays();
+})();
 
 function update(){
-  syncDateField();
-  var v=parseISO($('dob').value);
-  if(!v){ $('verdict').hidden=true; return; }   /* no reading, so no lit annunciator */
+  var mo=+$('mon').value, da=+$('day').value;
+  if(!mo||!da){ $('verdict').hidden=true; return; }   /* no reading, so no lit annunciator */
   var today=midnight(new Date());
-  var nxt=occurrence(today.getFullYear(),v.m,v.d);
-  if(nxt<today) nxt=occurrence(today.getFullYear()+1,v.m,v.d);
+  var nxt=occurrence(today.getFullYear(),mo,da);
+  if(nxt<today) nxt=occurrence(today.getFullYear()+1,mo,da);
   var d=Math.round((nxt-today)/86400000);
   state.d=d;
 
@@ -585,8 +584,8 @@ function update(){
 
   var half=addDays(nxt,-183);
   if(half<today) half=addDays(nxt,182);
-  var nb=occurrence(half.getFullYear(),v.m,v.d);
-  if(nb<half) nb=occurrence(half.getFullYear()+1,v.m,v.d);
+  var nb=occurrence(half.getFullYear(),mo,da);
+  if(nb<half) nb=occurrence(half.getFullYear()+1,mo,da);
   var hd=Math.round((nb-half)/86400000);
   $('r-half').innerHTML=fmt(half)+' \u2192 reads 1/2<sup>'+hd+'</sup>';
 
@@ -695,14 +694,14 @@ function setAudio(next){
   document.addEventListener(ev,noteGesture,true);
 });
 
-$('dob').addEventListener('input',update);
+$('mon').addEventListener('change',function(){ fillDays(); update(); });
+$('day').addEventListener('change',update);
 $('audio').addEventListener('click',function(){ setAudio(!on); });
 $('audio').addEventListener('keydown',function(e){
   if(e.key===' '||e.key==='Enter'){ e.preventDefault(); setAudio(!on); }
 });
 $('needle').setAttribute('transform','rotate('+angOf(365).toFixed(2)+' '+CX+' '+CY+')');
 $('cpm').textContent=Math.round(rate()*60)+' CPM';
-syncDateField();
 setAudio(true);
 })();
 </script>
